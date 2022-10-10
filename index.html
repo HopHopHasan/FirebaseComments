@@ -2,37 +2,32 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>HopHopHasan Comments</title>
+    <title>Comments</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script> //import firebase scripts
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script> //import jquery
     <!-- update the version number as needed -->
-    <script defer src="/__/firebase/9.8.1/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/9.8.1/firebase-app-compat.js"></script> //import firebase SDK
     <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/9.8.1/firebase-firestore-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
+    <script defer src="/__/firebase/9.8.1/firebase-firestore-compat.js"></script> //import firebase firestore SDK
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
-    <script src="iframeResizer.contentWindow.min.js"></script>
   </head>
   <style type="text/css">
-    body {background:none transparent;
+    body {background:none transparent; //enable transparency
     }
   </style>
-  <body onload="checkUUID()">
+  <body onload="checkUUID()"> //get user UUID
     <div id="title"><span style="font-size: 20px;"><b>Comments</b></span> <span style="font-size: 15px;" id="commentCount">0</span></div>
       <section class="type-message box-shadow">
         <form>
           <div class="namebox">
-              <input type="text" placeholder="Username" id="nickname" minlength=2 maxlength=16 required>
+              <input type="text" placeholder="Username" id="nickname" minlength=2 maxlength=16 required> //change max length as desired
           </div>
           <div class="messagebox" oninput="checkLength()">
-            <textarea placeholder="Type your comment here..." id="message" maxlength=256 required></textarea>
+            <textarea placeholder="Type your comment here..." id="message" maxlength=256 required></textarea> //change max length as desired
           </div>
-          <output id="length">0/256</output><br/>
+          <output id="length">0/256</output><br/> //change as desired
           <div class="send">
             <button type="submit">Send</button>
           </div>
@@ -52,7 +47,7 @@
       }
     
       function checkUUID(){
-        if (localStorage.ID){ // check if device has an ID stored in cookie
+        if (localStorage.ID){ //check if device has an ID stored in cookie
           var UUID = localStorage.ID;
         } 
         else {
@@ -67,13 +62,13 @@
         console.log(UUID);
       }
 
-      function checkLength(){ // write character count of currently typed message
+      function checkLength(){ //write character count of currently typed message
         document.getElementById("length").value = document.getElementById("message").value.length + "/256"
       }
 
       function processData(data){
         var res = data.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
-        if (res !== null){ // check if link and make it clickable
+        if (res !== null){ //check if link and make it clickable
           return '<a href="' + data + '" target="_blank">' + data + '</a>';
         }
         else{
@@ -88,8 +83,8 @@
       function deleteMessage(ID){
         const config = {
           //replace with your keys
-          apiKey: "AIzaSyA9wuSQUUGHe-G1iEyLu5eK4QUkoN26J0Q", 
-          projectId: "hophophasansitecomments"  
+          apiKey: "/////////////////", 
+          projectId: "comments"
         };
         const db = firebase.firestore(); //setup database
         db
@@ -113,19 +108,17 @@
         url = url.hostname;
       }
       catch(e){
-        var url = "basepage";
+        var url = "basepage"; //default page incase of error
       }
       const config = {
         //replace with your keys
-        apiKey: "AIzaSyA9wuSQUUGHe-G1iEyLu5eK4QUkoN26J0Q",  
-        projectId: "hophophasansitecomments"  
+        apiKey: "/////////////////",
+        projectId: "comments"  
       };
     
-      // seperate data by PAGES
-      // global chat
-      // init Cloud Firestore through Firebase
+      //init cloud firestore through firebase()
       const db = firebase.firestore();
-      const form = document.querySelector("form");
+      const form = document.querySelector("form"); //store page elements
       const nickname = document.getElementById("nickname");
       const message = document.getElementById("message");
       const dataArea = document.getElementById("loaddata");
@@ -133,8 +126,7 @@
       form.addEventListener("submit", e => {
         e.preventDefault();
 
-      //client check message conditions
-      if (nickname.value && message.value) {
+      if (nickname.value && message.value) { //client check message conditions
         db
           .collection(getPage()+"page")
           .doc(messageCount()).set({
@@ -161,8 +153,7 @@
         }
       });
 
-      //check for correct website
-      if (url == url){
+      if (url == "joke.com"){ //replace url (hostname only) with the page you will embed this site on, eg: "housepricecrash.co.uk"
         db
           .collection(getPage()+"page") //group by page
           .orderBy("date")
