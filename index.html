@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HopHopHasan Comments</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/9.8.1/firebase-app-compat.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/9.8.1/firebase-firestore-compat.js"></script>
+    <!-- 
+      initialize the SDK after all desired features are loaded, set useEmulator to false
+      to avoid connecting the SDK to running emulators.
+    -->
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+    <script src="iframeResizer.contentWindow.min.js"></script>
+  </head>
+  <style type="text/css">
+    body {background:none transparent;
+    }
+  </style>
+  <body onload="checkUUID()">
+    <div id="title"><span style="font-size: 20px;"><b>Comments</b></span> <span style="font-size: 15px;" id="commentCount">0</span></div>
+      <section class="type-message box-shadow">
+        <form>
+          <div class="namebox">
+              <input type="text" placeholder="Username" id="nickname" minlength=2 maxlength=16 required>
+          </div>
+          <div class="messagebox" oninput="checkLength()">
+            <textarea placeholder="Type your comment here..." id="message" maxlength=256 required></textarea>
+          </div>
+          <output id="length">0/256</output><br/>
+          <div class="send">
+            <button type="submit">Send</button>
+          </div>
+        </form>
+        <section class="comments">
+          <div id="loaddata">
+            <p>Loading messages...</p>
+          </div>
+        </section>
+      </section>
+
+    <script>
+      function getPage(){
+        var url = window.location.href;
+        let paramaters = (new URL(url)).searchParams;
+        return paramaters.get("page"); //get page comment section is embedded in
+      }
+    
+      function checkUUID(){
+        if (localStorage.ID){ // check if device has an ID stored in cookie
+          var UUID = localStorage.ID;
+        } 
+        else {
+          function uuidv4() {
+              return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+              (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16) //generate random UUID
+            );
+          }
+          var UUID = uuidv4();
+          localStorage.ID = UUID; //store UUID on client
+        }
+        console.log(UUID);
+      }
+
+      function checkLength(){ // write character count of currently typed message
+        document.getElementById("length").value = document.getElementById("message").value.length + "/256"
+      }
+
+      function processData(data){
+        var res = data.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+        if (res !== null){ // check if link and make it clickable
+          return '<a href="' + data + '" target="_blank">' + data + '</a>';
+        }
+        else{
+          return data;
+        }
+      }
+
+      function messageCount(){
+        return document.getElementById("commentCount").innerHTML.toString(); //get message count
+      }
+    
+      function deleteMessage(ID){
+        const config = {
+          //replace with your keys
+          apiKey: "AIzaSyA9wuSQUUGHe-G1iEyLu5eK4QUkoN26J0Q", 
+          projectId: "hophophasansitecomments"  
+        };
+        const db = firebase.firestore(); //setup database
+        db
+          .collection(getPage()+"page").doc(ID.toString()).update({
+            nickname: "Deleted",
+            message: "This message has been deleted.",
+            deviceID: "0"
+          }) // delete message
+          .then(docRef => {
+            console.log("Message deleted: ", ID.toString());
+          })
+          .catch(error => {
+              console.error("Error deleting message: ", error);
+          });
+      }
+    </script>
+
+    <script type="module">
+      try{
+        var url = new URL(document.referrer);
+        url = url.hostname;
+      }
+      catch(e){
+        var url = "basepage";
+      }
+      const config = {
+        //replace with your keys
+        apiKey: "AIzaSyA9wuSQUUGHe-G1iEyLu5eK4QUkoN26J0Q",  
+        projectId: "hophophasansitecomments"  
+      };
+    
+      // seperate data by PAGES
+      // global chat
+      // init Cloud Firestore through Firebase
+      const db = firebase.firestore();
+      const form = document.querySelector("form");
+      const nickname = document.getElementById("nickname");
+      const message = document.getElementById("message");
+      const dataArea = document.getElementById("loaddata");
+
+      form.addEventListener("submit", e => {
+        e.preventDefault();
+
+      //client check message conditions
+      if (nickname.value && message.value) {
+        db
+          .collection(getPage()+"page")
+          .doc(messageCount()).set({
+            nickname: nickname.value,
+            message: processData(message.value),
+            date: new Date(),
+            deviceID: localStorage.ID,
+            messageID: messageCount()
+          })
+          .then(docRef => {
+            console.log("Message sent");
+          })
+          .catch(error => {
+            console.error("Error adding message: ", error);
+          });
+        nickname.value = "";
+        message.value = "";
+        checkLength()
+        }
+        else{
+          nickname.value = "";
+          message.value = "";
+          checkLength()
+        }
+      });
+
+      //check for correct website
+      if (url == url){
+        db
+          .collection(getPage()+"page") //group by page
+          .orderBy("date")
+          .onSnapshot(querySnapshot => {
+            let messages = [];
+            querySnapshot.forEach(chat => {
+              messages.push(chat.data());
+            });
+
+            if (messages.length !== 0) { //check message count and update
+              dataArea.innerHTML = "";
+              document.getElementById("commentCount").innerHTML = messages.length;
+            }
+            else {
+              dataArea.innerHTML = "<p>No messages</p>"; // display no messages sign
+              document.getElementById("commentCount").innerHTML = messages.length;
+            }
+
+            for (var i = messages.length-1; i > -1 ; i--) {
+              var date = new Date(messages[i].date.seconds * 1000);
+              var createdOn = date.toLocaleDateString();
+              var hours = date.getHours();
+              var minutes = "0" + date.getMinutes();
+              var createdOn = createdOn + " " + hours + ':' + minutes.substr(-2); // format time and date
+              if (messages[i].deviceID == localStorage.ID){ //check if message was posted by you
+                dataArea.innerHTML += 
+              `<article id=${messages[i].messageID}><p><b>${messages[i].nickname}</b> <em>${createdOn}</em> | <button onclick="deleteMessage(${messages[i].messageID})">Delete</button> <br/>${messages[i].message}</p></article>`;
+              }
+              else { // messages not written by you
+                dataArea.innerHTML += 
+              `<article id=${messages[i].messageID}><p><b>${messages[i].nickname}</b> <em>${createdOn}</em><br/>${messages[i].message} </p></article>`; 
+              }
+            }
+        });
+      }
+      else{
+        dataArea.innerHTML = "Invalid page"; // if embed is on a page its not supposed to be on
+      }
+    </script>
+  </body>
+</html>
