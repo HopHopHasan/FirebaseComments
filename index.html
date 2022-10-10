@@ -5,29 +5,29 @@
     <title>Comments</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script> //import firebase scripts
+    <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script> <!-- import firebase scripts -->
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script> //import jquery
     <!-- update the version number as needed -->
-    <script defer src="/__/firebase/9.8.1/firebase-app-compat.js"></script> //import firebase SDK
+    <script defer src="/__/firebase/9.8.1/firebase-app-compat.js"></script> <!-- import firebase SDK -->
     <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/9.8.1/firebase-firestore-compat.js"></script> //import firebase firestore SDK
+    <script defer src="/__/firebase/9.8.1/firebase-firestore-compat.js"></script> <!-- import firebase firestore SDK -->
     <script defer src="/__/firebase/init.js?useEmulator=true"></script>
   </head>
   <style type="text/css">
-    body {background:none transparent; //enable transparency
+    body {background:none transparent; // enable transparency
     }
   </style>
-  <body onload="checkUUID()"> //get user UUID
+  <body onload="checkUUID()"> <!-- get user UUID -->
     <div id="title"><span style="font-size: 20px;"><b>Comments</b></span> <span style="font-size: 15px;" id="commentCount">0</span></div>
       <section class="type-message box-shadow">
         <form>
           <div class="namebox">
-              <input type="text" placeholder="Username" id="nickname" minlength=2 maxlength=16 required> //change max length as desired
+              <input type="text" placeholder="Username" id="nickname" minlength=2 maxlength=16 required> <!-- change max length as desired -->
           </div>
           <div class="messagebox" oninput="checkLength()">
-            <textarea placeholder="Type your comment here..." id="message" maxlength=256 required></textarea> //change max length as desired
+            <textarea placeholder="Type your comment here..." id="message" maxlength=256 required></textarea> <!-- change max length as desired -->
           </div>
-          <output id="length">0/256</output><br/> //change as desired
+          <output id="length">0/256</output><br/> <!-- change as desired -->
           <div class="send">
             <button type="submit">Send</button>
           </div>
