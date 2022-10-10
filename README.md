@@ -10,3 +10,7 @@ Once you've deployed the Firebase site, embed the comment site in an iframe, whe
 ```
 https://examplesitecomments.firebaseapp.com/?page=commentSection
 ```
+
+The comment box will embed seamlessly into the inital site.
+
+![image](https://user-images.githubusercontent.com/50119098/194957254-9ccfb0bf-1c6b-4c3a-bdbf-862643ee0f73.png)
